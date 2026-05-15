@@ -4,4 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+enigo = "0.6.1"
 pyo3 = "0.28.3"
+screenshots = "0.8.10"
+pixen = {git = "https://github.com/ignat10/pixen"}
+anyhow = "1.0.102"
