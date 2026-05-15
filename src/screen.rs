@@ -4,17 +4,17 @@ use pixen::Image;
 use anyhow::Result;
 
 static SCREEN: OnceLock<Screen> = OnceLock::new();
-static SCREENSHOT: RwLock<Option<Image>> = RwLock::new(None);
+pub(super) static SCREENSHOT: RwLock<Option<Image>> = RwLock::new(None);
 
-pub(super) fn capture_full() {
+pub(crate) fn capture_full() {
     let mut screenshot_guard = SCREENSHOT.write().unwrap();
     if screenshot_guard.is_none() {
         let screen = get_screen();
         let rgba_img = screen.capture().unwrap();
 
-        let w = rgba_img.width() as usize;
-        let h = rgba_img.height() as usize;
-        *screenshot_guard = Some(Image::new(rgba_img.into_raw(), w, h, 4usize))
+        let w = rgba_img.width();
+        let h = rgba_img.height();
+        *screenshot_guard = Some(Image::new(rgba_img.into_raw(), w, h, 4u32))
     };
 }
 
@@ -37,7 +37,7 @@ pub(super) fn capture_part(
         w.into(),
         h.into()
     )?;
-    Ok(Image::new(rgba.into_raw(), w as usize, h as usize, 4usize))
+    Ok(Image::new(rgba.into_raw(), w, h, 4u8))
 }
 
 
@@ -45,4 +45,9 @@ fn get_screen() -> &'static Screen {
     SCREEN.get_or_init(|| {
         Screen::all().unwrap().into_iter().next().unwrap()
     })
+}
+
+
+pub(super) fn reset_screen() {
+    *SCREENSHOT.write().unwrap() = None;
 }
